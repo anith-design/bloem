@@ -5,6 +5,8 @@ const settings = {
   dimensions: [2048, 2048],
   pixelsPerInch: 300,
   animate: true,
+  duration: 12,
+  fps: 60
 };
 
 const sketch = () => {
@@ -42,7 +44,8 @@ const sketch = () => {
         const distY = gridCenterY - centerY;
         const distance = Math.sqrt(distX * distX + distY * distY);
 
-        const wave = Math.sin(distance * 5 - time * 1.5);
+        //const wave = Math.sin(distance - time * 1.5);
+        const wave = Math.sin(distance - time * 1.5);
         //const wave = Math.sin(distance * 0.05 - time * 5)
 
         const scale = (wave + 1) / 2;
@@ -56,6 +59,7 @@ const sketch = () => {
 
         context.beginPath();
         context.rect(-squareW / 2, -squareH / 2, squareW, squareH);
+        //context.arc(0, 0, squareW / 2, 0, Math.PI * 2);
         context.fill();
 
         context.restore();
