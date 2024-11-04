@@ -1,4 +1,5 @@
 const canvasSketch = require("canvas-sketch");
+const { noise2D } = require('canvas-sketch-util/random');
 const risoColors = require("../assets/risoColors.json");
 
 const settings = {
@@ -11,10 +12,11 @@ const settings = {
 
 const sketch = () => {
   const goldenRatio = (1 + Math.sqrt(5)) / 2;
-  const color = risoColors[Math.floor(Math.random() * risoColors.length)];
+  console.log(goldenRatio);
+  const color = risoColors[2];
   return ({ context, width, height, playhead }) => {
     const margin = 120;
-    const cols = 30;
+    const cols = 40;
     const rows = cols;
 
     const gridWidth = width - 2 * margin;
@@ -46,18 +48,19 @@ const sketch = () => {
         const distance = Math.sqrt(distX * distX + distY * distY);
 
         //const wave = Math.sin(distance - time * 1.5);
-        const wave = Math.sin(distance * goldenRatio - playhead * (Math.PI * 2 * 3));
+        const wave = Math.sin(distance * goldenRatio * 0.2 - playhead * (Math.PI * 2 * 3));
         //const wave = Math.sin(distance * 0.05 - time * 5)
         
-        const scale = (wave + 1) / 2;
+        const goldenScale = noise2D(goldenRatio, -distance * 0.1);
+        const scale = (wave + 1) / 2 * goldenScale;
 
         context.save();
 
         context.translate(gridCenterX, gridCenterY);
-        // context.rotate(wave * Math.PI * 1);
-        context.scale(scale, scale);
+        // context.rotate(wave * Math.PI * goldenRatio * 0.2);
+        context.scale(scale * 5, scale * 1.5);
 
-        context.fillStyle = color.hex;
+        context.fillStyle = 'hsl(0, 0%, 60%)';
 
         context.beginPath();
         context.rect(-squareW / 2, -squareH / 2, squareW, squareH);
