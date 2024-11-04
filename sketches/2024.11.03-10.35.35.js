@@ -58,7 +58,7 @@ const sketch = () => {
 
         context.translate(gridCenterX, gridCenterY);
         // context.rotate(wave * Math.PI * goldenRatio * 0.2);
-        context.scale(scale * 5, scale * 1.5);
+        context.scale(scale, scale);
 
         context.fillStyle = 'hsl(0, 0%, 60%)';
 
