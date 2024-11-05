@@ -16,7 +16,7 @@ const sketch = () => {
 
   return ({ context, width, height, playhead }) => {
     const margin = 120;
-    const cols = 40;
+    const cols = 80;
     const rows = cols;
 
     const gridWidth = width - 2 * margin;
@@ -46,34 +46,72 @@ const sketch = () => {
         const distY = gridCenterY - centerY;
         const distance = Math.sqrt(distX * distX + distY * distY);
 
-        const wave = Math.cos(distance * goldenRatio * 0.2 - playhead * (Math.PI * 2 * 3));
+        const wave = Math.sin(distance * 1 * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 3));
         const scale = (wave + 1) / 2;
 
         context.save();
 
         context.translate(gridCenterX, gridCenterY);
         context.scale(scale, scale);
-        context.rotate(i * 0.1, j,  goldenRatio * 0.05);
+        //context.rotate(i * 0.2, j * 0.1, goldenRatio * 0.2);
 
-        context.fillStyle = color.hex; // Use the chosen riso color
-        context.fillRect(-squareW / 2, -squareH / 2, squareW, squareH);
+        context.fillStyle = color.hex;
+
+        const numPetals = 10; // Number of lines to draw
+        const petalLength = squareW * 0.5;
+
+        for (let k = 0; k < numPetals; k++) {
+          const angle = (Math.PI * 2 / numPetals) * k;
+          context.beginPath();
+          context.moveTo(0, 0);
+          context.lineTo(petalLength * Math.cos(angle), petalLength * Math.sin(angle));
+          context.strokeStyle = color.hex;
+          context.stroke();
+
+          context.rotate(angle);
+          context.fillRect(-squareW / 2, -squareH / 2, squareW, squareH);
+        }
+
+        // // Draw lines instead of rectangles
+        // // Draw lines instead of rectangles
+        // const lineLength = squareW * 1.2; // Length of the line
+        // context.strokeStyle = color.hex; // Use the chosen riso color
+        // context.lineWidth = 8; // Increased line width for better visibility
+
+        // // Draw lines radiating outward in different angles
+        // for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / numLines) {
+        //   context.beginPath();
+        //   context.moveTo(0, 0); // Start at the center of the grid cell
+        //   context.lineTo(lineLength * Math.cos(angle), lineLength * Math.sin(angle)); // End at the calculated point
+        //   context.stroke();
+        // }
 
         context.restore();
       }
     }
 
-    // Add your name and date at the bottom
-    context.fillStyle = 'hsl(0, 0%, 20%)';
-    context.font = "bold 28px sans-serif";
-    context.textAlign = "right";
-    context.textBaseline = "bottom";
-    context.fillText("@anith.png", width - margin, height - 55); 
+    // Font stuff.
+    const fontFill = 'hsl(0, 0%, 20%)';
+    const fontName = 'bold 28px Neue Haas Grotesk Text';
+    const fontYPos = height - 50;
 
-    context.fillStyle = 'hsl(0, 0%, 20%)';
-    context.font = "bold 28px sans-serif";
+    context.fillStyle = fontFill;
+    context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText("05/11/24", margin, height - 55);
+    context.fillText('05/11/24', margin, fontYPos);
+
+    context.fillStyle = fontFill;
+    context.font = fontName;
+    context.textAlign = 'center';
+    context.textBaseline = 'bottom';
+    context.fillText('bloem', width / 2, fontYPos); 
+
+    context.fillStyle = fontFill;
+    context.font = fontName;
+    context.textAlign = 'right';
+    context.textBaseline = 'bottom';
+    context.fillText('@anith.png', width - margin, fontYPos); 
   };
 };
 
