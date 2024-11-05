@@ -6,8 +6,7 @@ const settings = {
   dimensions: [2048, 2048],
   pixelsPerInch: 300,
   animate: true,
-  duration: 16,
-  fps: 60
+  duration: 16
 };
 
 const sketch = () => {
@@ -51,8 +50,8 @@ const sketch = () => {
         const wave = Math.sin(distance * goldenRatio * 0.2 - playhead * (Math.PI * 2 * 3));
         //const wave = Math.sin(distance * 0.05 - time * 5)
         
-        const goldenScale = noise2D(goldenRatio, -distance * 0.1);
-        const scale = (wave + 1) / 2 * goldenScale;
+        const goldenScale = noise2D(goldenRatio, -distance);
+        const scale = (wave + 1) / 2;
 
         context.save();
 
@@ -60,7 +59,7 @@ const sketch = () => {
         // context.rotate(wave * Math.PI * goldenRatio * 0.2);
         context.scale(scale, scale);
 
-        context.fillStyle = 'hsl(0, 0%, 60%)';
+        context.fillStyle = risoColors[2].hex;
 
         context.beginPath();
         context.rect(-squareW / 2, -squareH / 2, squareW, squareH);
@@ -70,6 +69,19 @@ const sketch = () => {
         context.restore();
       }
     }
+
+    // Add your name at the bottom
+    context.fillStyle = 'hsl(0, 0%, 20%)'; // Adjust color as desired
+    context.font = "28px Neue Haas Grotesk Text"; // Adjust font size and style as desired
+    context.textAlign = "right";
+    context.textBaseline = "bottom";
+    context.fillText("@anith.png", width - margin, height - 50); // Position 50px from the bottom
+
+    context.fillStyle = 'black';
+    context.font = "28px sans-serif";
+    context.textAlign = 'left';
+    context.textBaseline = 'bottom';
+    context.fillText("05/11/24", margin, height - 50);
   };
 };
 
