@@ -1,5 +1,4 @@
 const canvasSketch = require("canvas-sketch");
-const { noise2D, value } = require('canvas-sketch-util/random');
 const risoColors = require("../assets/risoColors.json");
 
 const settings = {
@@ -11,69 +10,72 @@ const settings = {
 };
 
 const sketch = () => {
-  const goldenRatio = (1 + Math.sqrt(5)) / 2;
-  const color = risoColors[2];
+  // Select three colors from the risoColors array
+  const color1 = risoColors[1].hex; // First color
+  const color2 = risoColors[5].hex; // Second color
+  const color3 = risoColors[4].hex; // Third color
 
   return ({ context, width, height, playhead }) => {
-    const margin = 120;
-    const cols = 40;
-    const rows = cols;
+    // Set the background to a solid color to avoid black edges
+    context.fillStyle = 'hsl(0, 0%, 98%)'; 
+    context.fillRect(0, 0, width, height);
 
-    const gridWidth = width - 2 * margin;
-    const gridHeight = height - 2 * margin;
+    const margin = 120; // Define margins
+    const canvWidth = width - 2 * margin; // Calculate inner width
+    const canvHeight = height - 2 * margin; // Calculate inner height
 
-    const squareW = gridWidth / cols;
-    const squareH = gridHeight / rows;
+    const centerX = width / 2; // Center X position
+    const centerY = height / 2; // Center Y position
 
-    const startX = margin;
-    const startY = margin;
+    context.save();
 
-    context.fillStyle = "hsl(0, 0%, 98%)";
-    context.fillRect(0, 0, width, height); 
+    // Create a radial gradient
+    const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) / 2 - margin);
+    
+    // Define the colors and their positions for the gradient
+    const colors = [color1, color2, color3];
+    const numberOfWaves = colors.length; // Use the number of selected colors
 
-    const centerX = width / 2;
-    const centerY = height / 2;
+    for (let i = 0; i < numberOfWaves; i++) {
+      const distanceFactor = i / (numberOfWaves - 1); // Normalized distance (0 to 1)
+      
+      // Use the playhead to animate the sine wave
+      const sineValue = Math.sin((distanceFactor + playhead * goldenRatio * 0.1) * Math.PI * 2); // Sine wave for dynamic effect
+      const scale = (sineValue + 1) / 2; // Scale to 0 - 1
 
-    for (let i = 0; i < cols; i++) {
-      for (let j = 0; j < rows; j++) {
-        const x = startX + i * squareW;
-        const y = startY + j * squareH;
-
-        const gridCenterX = x + squareW / 2;
-        const gridCenterY = y + squareH / 2;
-
-        const distX = gridCenterX - centerX;
-        const distY = gridCenterY - centerY;
-        const distance = Math.sqrt(distX * distX + distY * distY);
-
-        const wave = Math.cos(distance * goldenRatio * 0.2 - playhead * (Math.PI * 2 * 3));
-        const scale = (wave + 1) / 2;
-
-        context.save();
-
-        context.translate(gridCenterX, gridCenterY);
-        context.scale(scale, scale);
-        context.rotate(i * 0.1, j,  goldenRatio * 0.05);
-
-        context.fillStyle = color.hex; // Use the chosen riso color
-        context.fillRect(-squareW / 2, -squareH / 2, squareW, squareH);
-
-        context.restore();
-      }
+      // Create an HSL color using the scale to adjust lightness
+      const hslColor = `hsl(${(i * 120) % 360}, 100%, ${50 + 20 * scale}%)`; // Adjust lightness based on scale
+      gradient.addColorStop(distanceFactor, hslColor);
     }
 
-    // Add your name and date at the bottom
-    context.fillStyle = 'hsl(0, 0%, 20%)';
-    context.font = "bold 28px sans-serif";
-    context.textAlign = "right";
-    context.textBaseline = "bottom";
-    context.fillText("@anith.png", width - margin, height - 55); 
+    // Fill with the gradient
+    context.fillStyle = gradient;
+    context.fillRect(margin, margin, canvWidth, canvHeight); // Fill the margin-corrected area
 
-    context.fillStyle = 'hsl(0, 0%, 20%)';
-    context.font = "bold 28px sans-serif";
+    context.restore();
+
+    // Font stuff.
+    const fontFill = 'hsl(0, 0%, 20%)';
+    const fontName = 'bold 28px Neue Haas Grotesk Text';
+    const fontYPos = height - 50;
+
+    context.fillStyle = fontFill;
+    context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText("05/11/24", margin, height - 55);
+    context.fillText('05/11/24', margin, fontYPos);
+
+    context.fillStyle = fontFill;
+    context.font = fontName;
+    context.textAlign = 'center';
+    context.textBaseline = 'bottom';
+    context.fillText('bloem', width / 2, fontYPos); 
+
+    context.fillStyle = fontFill;
+    context.font = fontName;
+    context.textAlign = 'right';
+    context.textBaseline = 'bottom';
+    context.fillText('@anith.png', width - margin, fontYPos); 
   };
 };
 
