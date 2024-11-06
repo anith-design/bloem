@@ -11,9 +11,7 @@ const settings = {
 const sketch = () => {
   const goldenRatio = (1 + Math.sqrt(5)) / 2;
   const primaryColor = risoColors[15].hex;
-  const secondaryColor = risoColors[75].hex;
 
-  const colors = [primaryColor, secondaryColor];
   return ({ context, width, height, playhead }) => {
     const margin = 120;
     const cols = 80;
@@ -48,7 +46,6 @@ const sketch = () => {
         const distX = gridCenterX - centerX;
         const distY = gridCenterY - centerY;
         const distance = Math.sqrt(distX * distX + distY * distY);
-        const angle = Math.atan2(distY, distX);
 
         const distanceFactor = distance / maxDistance;
 
@@ -82,7 +79,7 @@ const sketch = () => {
     context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText('06.11.24', margin, fontYPos);
+    context.fillText('07.11.24', margin, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
