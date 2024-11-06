@@ -1,20 +1,19 @@
 const canvasSketch = require("canvas-sketch");
-const { noise2D, value } = require('canvas-sketch-util/random');
 const risoColors = require("../assets/risoColors.json");
-
+console.log(risoColors);
 const settings = {
   dimensions: [2048, 2048],
   pixelsPerInch: 300,
   animate: true,
-  duration: 16,
-  fps: 60
+  duration: 16
 };
 
 const sketch = () => {
   const goldenRatio = (1 + Math.sqrt(5)) / 2;
-  const color = risoColors[2];
-  const ditherColor = 'black'; // Choose a different color for dithering
+  const primaryColor = risoColors[15].hex;
+  const secondaryColor = risoColors[75].hex;
 
+  const colors = [primaryColor, secondaryColor];
   return ({ context, width, height, playhead }) => {
     const margin = 120;
     const cols = 80;
@@ -30,10 +29,13 @@ const sketch = () => {
     const startY = margin;
 
     context.fillStyle = "hsl(0, 0%, 98%)";
+    // context.fillStyle = risoColors[31].hex;
     context.fillRect(0, 0, width, height);
 
     const centerX = width / 2;
     const centerY = height / 2;
+
+    const maxDistance = Math.sqrt((centerX - margin) ** 2 + (centerY - margin) ** 2);
 
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
@@ -46,18 +48,22 @@ const sketch = () => {
         const distX = gridCenterX - centerX;
         const distY = gridCenterY - centerY;
         const distance = Math.sqrt(distX * distX + distY * distY);
+        const angle = Math.atan2(distY, distX);
 
-        const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 3));
-        const scale = (wave + 1) / 2;
+        const distanceFactor = distance / maxDistance;
+
+        const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
+        //const scale = (wave + 1) / 2;
+        const scale = (wave + goldenRatio - 1 * distanceFactor) / 2;
 
         context.save();
 
         context.translate(gridCenterX, gridCenterY);
         context.scale(scale, scale);
 
-        context.fillStyle = color.hex;
+        context.fillStyle = primaryColor;
 
-        const numPetals = 10; 
+        const numPetals = 10;
         for (let k = 0; k < numPetals; k++) {
           const angle = (Math.PI * 2 / numPetals) * k;
           context.rotate(angle);
@@ -76,7 +82,7 @@ const sketch = () => {
     context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText('05.11.24', margin, fontYPos);
+    context.fillText('06.11.24', margin, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
