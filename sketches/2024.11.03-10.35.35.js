@@ -38,7 +38,7 @@ function rgbToHex(r, g, b) {
 
 const sketch = () => {
   const goldenRatio = (1 + Math.sqrt(5)) / 2;
-  const primaryColor = risoColors[66].hex;
+  const primaryColor = risoColors[59].hex;
   const secondaryColor = risoColors[75].hex;
   const accentColor = risoColors[12].hex;
 
@@ -59,6 +59,7 @@ const sketch = () => {
     const startY = margin;
 
     context.fillStyle = 'hsl(0, 0%, 98%)';
+    //context.fillStyle = risoColors[6].hex;
     context.fillRect(0, 0, width, height);
 
     const centerX = width / 2;
@@ -80,14 +81,13 @@ const sketch = () => {
         const distanceFactor = distance / maxDistance;
 
         const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
-        const scale = (wave + 1) / 2;
-        // const scale = (wave + goldenRatio - 1 * distanceFactor) / 2;
+        // const scale = (wave + 1) / 2;
+        const scale = (wave + goldenRatio - 1 * distanceFactor) / 2;
 
         const colorIndex = Math.floor(playhead * filteredColors.length) % filteredColors.length;
-        const color = filteredColors[colorIndex];
 
-        const interpFactor = (Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
-        const lerpedColor = interpolateColor(color, filteredColors[(colorIndex + 1) % filteredColors.length], interpFactor);
+        const interpFactor = (Math.cos(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
+        const lerpedColor = interpolateColor(filteredColors[0], filteredColors[2], interpFactor);
 
         context.save();
 
@@ -108,7 +108,7 @@ const sketch = () => {
 
     // Lockup.
     const fontFill = 'hsl(0, 0%, 20%)';
-    const fontName = 'bold 32px Neue Haas Grotesk Text';
+    const fontName = 'bold 28px Neue Haas Grotesk Text';
     const fontYPos = height - 50;
 
     context.fillStyle = fontFill;
