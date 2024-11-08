@@ -6,7 +6,7 @@ console.log(risoColors);
 const settings = {
   dimensions: [2048, 2048],
   pixelsPerInch: 300,
-  animate: false,
+  animate: true,
   duration: 16
 };
 
