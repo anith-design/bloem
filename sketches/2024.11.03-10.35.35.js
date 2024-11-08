@@ -4,7 +4,7 @@ const risoColors = require("../assets/risoColors.json");
 console.log(risoColors);
 
 const settings = {
-  dimensions: [2048, 2048],
+  dimensions: [ 2048, 2048 ],
   pixelsPerInch: 300,
   animate: true,
   duration: 16
@@ -62,7 +62,7 @@ const sketch = () => {
   noiseContext.putImageData(imageData, 0, 0);
 
   return ({ context, width, height, playhead }) => {
-    const margin = 120;
+    const margin = 128;
     const cols = 80;
     const rows = cols;
 
@@ -101,10 +101,9 @@ const sketch = () => {
 
         context.globalAlpha = Math.pow(1 - distanceFactor, 3.5);
 
-        // const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)) && Math.cos(distanceFactor + goldenRatio * 0.3);
+        // const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
         const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
-        // const scale = (wave + 1) / 2;
-        const scale = (wave + goldenRatio - 2 * distanceFactor + 0.1) / 2;
+        const scale = (wave + goldenRatio - 2 * distanceFactor) / 2;
 
         const interpFactor = (Math.cos(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
         const lerpedColor = interpolateColor(filteredColors[0], filteredColors[2], interpFactor);
@@ -126,13 +125,13 @@ const sketch = () => {
       }
     }
 
-    context.globalAlpha = 0.24; 
+    context.globalAlpha = 0.2; 
     context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
     context.globalAlpha = 1.0;
 
     // Lockup.
     const fontFill = 'hsl(320, 25%, 5%)';
-    const fontName = 'bold 30px Neue Haas Grotesk Text';
+    const fontName = 'bold 28px Neue Haas Grotesk Text';
     const fontYPos = height - 50;
 
     context.fillStyle = fontFill;
