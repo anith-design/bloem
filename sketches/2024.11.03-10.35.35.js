@@ -6,7 +6,7 @@ console.log(risoColors);
 const settings = {
   dimensions: [2048, 2048],
   pixelsPerInch: 300,
-  animate: false,
+  animate: true,
   duration: 16
 };
 
@@ -81,7 +81,7 @@ const sketch = () => {
     const centerX = width / 2;
     const centerY = height / 2;
 
-    context.fillStyle = 'hsl(320, 25%, 5%)';
+    context.fillStyle = 'hsl(320, 24%, 6%)';
     context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
     
     for (let i = 0; i < cols; i++) {
@@ -126,7 +126,7 @@ const sketch = () => {
       }
     }
 
-    context.globalAlpha = 0.24; 
+    context.globalAlpha = 0.25; 
     context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
     context.globalAlpha = 1.0;
 
