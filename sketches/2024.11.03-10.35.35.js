@@ -83,7 +83,7 @@ const sketch = () => {
     const centerX = width / 2;
     const centerY = height / 2;
 
-    context.fillStyle = risoColors[6].hex;
+    // context.fillStyle = risoColors[6].hex;
     context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
 
     for (let i = 0; i < cols; i++) {
@@ -102,8 +102,8 @@ const sketch = () => {
         const distanceFactor = distance / maxDistance;
         context.globalAlpha = Math.pow(1 - distanceFactor, 2);
 
-        const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)) && Math.cos(distanceFactor + goldenRatio * 0.3);
-        // const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)) % Math.cos(random.noise2D(-distanceFactor, goldenRatio) + goldenRatio * 5);
+        // const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)) && Math.cos(distanceFactor + goldenRatio * 0.3);
+        const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
         // const scale = (wave + 1) / 2;
         const scale = (wave + goldenRatio - 2 * distanceFactor + 0.1) / 2;
 
@@ -127,7 +127,7 @@ const sketch = () => {
       }
     }
 
-    context.globalAlpha = 0.4; 
+    context.globalAlpha = 0.5; 
     context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
     context.globalAlpha = 1.0;
 
