@@ -6,7 +6,7 @@ console.log(risoColors);
 const settings = {
   dimensions: [2048, 2048],
   pixelsPerInch: 300,
-  animate: true,
+  animate: false,
   duration: 16
 };
 
@@ -21,7 +21,6 @@ function interpolateColor(color1, color2, factor) {
   return rgbToHex(r, g, b);
 }
 
-// Function to convert hex to RGB
 function hexToRgb(hex) {
   const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return match ? {
@@ -31,7 +30,6 @@ function hexToRgb(hex) {
   } : null;
 }
 
-// Function to convert RGB to Hex
 function rgbToHex(r, g, b) {
   return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase();
 }
@@ -46,7 +44,7 @@ const sketch = () => {
 
   const noiseCanvas = document.createElement("canvas");
   const noiseContext = noiseCanvas.getContext("2d");
-  noiseCanvas.width = 1024; // Smaller dimensions for performance
+  noiseCanvas.width = 1024;
   noiseCanvas.height = 1024;
 
   noiseContext.fillStyle = 'white';
@@ -58,7 +56,7 @@ const sketch = () => {
     imageData.data[i] = 255;
     imageData.data[i + 1] = 255;
     imageData.data[i + 2] = 255;
-    imageData.data[i + 3] = random.rangeFloor(50, 175); // Adjust transparency
+    imageData.data[i + 3] = random.rangeFloor(50, 175);
   }
 
   noiseContext.putImageData(imageData, 0, 0);
@@ -83,9 +81,9 @@ const sketch = () => {
     const centerX = width / 2;
     const centerY = height / 2;
 
-    // context.fillStyle = risoColors[6].hex;
+    context.fillStyle = 'hsl(320, 25%, 5%)';
     context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
-
+    
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
         const x = startX + i * squareW;
@@ -100,7 +98,8 @@ const sketch = () => {
 
         const maxDistance = Math.sqrt((centerX - margin) ** 2 + (centerY - margin) ** 2);
         const distanceFactor = distance / maxDistance;
-        context.globalAlpha = Math.pow(1 - distanceFactor, 2);
+
+        context.globalAlpha = Math.pow(1 - distanceFactor, 3.5);
 
         // const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)) && Math.cos(distanceFactor + goldenRatio * 0.3);
         const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
@@ -127,12 +126,12 @@ const sketch = () => {
       }
     }
 
-    context.globalAlpha = 0.5; 
+    context.globalAlpha = 0.24; 
     context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
     context.globalAlpha = 1.0;
 
     // Lockup.
-    const fontFill = 'hsl(0, 0%, 19%)';
+    const fontFill = 'hsl(320, 25%, 5%)';
     const fontName = 'bold 30px Neue Haas Grotesk Text';
     const fontYPos = height - 50;
 
