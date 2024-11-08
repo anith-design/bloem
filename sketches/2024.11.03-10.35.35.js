@@ -44,6 +44,25 @@ const sketch = () => {
 
   const filteredColors = [primaryColor, secondaryColor, accentColor];
 
+  const noiseCanvas = document.createElement("canvas");
+  const noiseContext = noiseCanvas.getContext("2d");
+  noiseCanvas.width = 1024; // Smaller dimensions for performance
+  noiseCanvas.height = 1024;
+
+  noiseContext.fillStyle = 'white';
+  noiseContext.fillRect(0, 0, noiseCanvas.width, noiseCanvas.height);
+  
+  const imageData = noiseContext.getImageData(0, 0, noiseCanvas.width, noiseCanvas.height);
+
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    imageData.data[i] = 255;
+    imageData.data[i + 1] = 255;
+    imageData.data[i + 2] = 255;
+    imageData.data[i + 3] = random.rangeFloor(50, 175); // Adjust transparency
+  }
+
+  noiseContext.putImageData(imageData, 0, 0);
+
   return ({ context, width, height, playhead }) => {
     const margin = 120;
     const cols = 80;
@@ -59,11 +78,13 @@ const sketch = () => {
     const startY = margin;
 
     context.fillStyle = 'hsl(0, 0%, 98%)';
-    //context.fillStyle = risoColors[6].hex;
     context.fillRect(0, 0, width, height);
 
     const centerX = width / 2;
     const centerY = height / 2;
+
+    context.fillStyle = risoColors[6].hex;
+    context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
 
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
@@ -79,12 +100,12 @@ const sketch = () => {
 
         const maxDistance = Math.sqrt((centerX - margin) ** 2 + (centerY - margin) ** 2);
         const distanceFactor = distance / maxDistance;
+        context.globalAlpha = Math.pow(1 - distanceFactor, 2);
 
-        const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
+        const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)) && Math.cos(distanceFactor + goldenRatio * 0.3);
+        // const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)) % Math.cos(random.noise2D(-distanceFactor, goldenRatio) + goldenRatio * 5);
         // const scale = (wave + 1) / 2;
-        const scale = (wave + goldenRatio - 1 * distanceFactor) / 2;
-
-        const colorIndex = Math.floor(playhead * filteredColors.length) % filteredColors.length;
+        const scale = (wave + goldenRatio - 2 * distanceFactor + 0.1) / 2;
 
         const interpFactor = (Math.cos(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
         const lerpedColor = interpolateColor(filteredColors[0], filteredColors[2], interpFactor);
@@ -106,16 +127,20 @@ const sketch = () => {
       }
     }
 
+    context.globalAlpha = 0.4; 
+    context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
+    context.globalAlpha = 1.0;
+
     // Lockup.
-    const fontFill = 'hsl(0, 0%, 20%)';
-    const fontName = 'bold 28px Neue Haas Grotesk Text';
+    const fontFill = 'hsl(0, 0%, 19%)';
+    const fontName = 'bold 30px Neue Haas Grotesk Text';
     const fontYPos = height - 50;
 
     context.fillStyle = fontFill;
     context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText('07.11.24', margin, fontYPos);
+    context.fillText('08.11.24', margin, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
