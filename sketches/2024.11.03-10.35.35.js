@@ -1,7 +1,6 @@
 const canvasSketch = require("canvas-sketch");
 const random = require('canvas-sketch-util/random');
 const risoColors = require("../assets/risoColors.json");
-console.log(risoColors);
 
 const settings = {
   dimensions: [2048, 2048],
@@ -46,36 +45,29 @@ const sketch = () => {
 
   const noiseCanvas = document.createElement("canvas");
   const noiseContext = noiseCanvas.getContext("2d");
-  noiseCanvas.width = 1024; // Smaller dimensions for performance
+  noiseCanvas.width = 1024;
   noiseCanvas.height = 1024;
 
   noiseContext.fillStyle = 'white';
   noiseContext.fillRect(0, 0, noiseCanvas.width, noiseCanvas.height);
-  
+
   const imageData = noiseContext.getImageData(0, 0, noiseCanvas.width, noiseCanvas.height);
 
   for (let i = 0; i < imageData.data.length; i += 4) {
     imageData.data[i] = 255;
     imageData.data[i + 1] = 255;
     imageData.data[i + 2] = 255;
-    imageData.data[i + 3] = random.rangeFloor(50, 175); // Adjust transparency
+    imageData.data[i + 3] = random.rangeFloor(50, 175);
   }
 
   noiseContext.putImageData(imageData, 0, 0);
 
   return ({ context, width, height, playhead }) => {
-    const margin = 120;
     const cols = 80;
     const rows = cols;
 
-    const gridWidth = width - 2 * margin;
-    const gridHeight = height - 2 * margin;
-
-    const squareW = gridWidth / cols;
-    const squareH = gridHeight / rows;
-
-    const startX = margin;
-    const startY = margin;
+    const squareW = width / cols;
+    const squareH = height / rows;
 
     context.fillStyle = 'hsl(0, 0%, 98%)';
     context.fillRect(0, 0, width, height);
@@ -83,13 +75,14 @@ const sketch = () => {
     const centerX = width / 2;
     const centerY = height / 2;
 
+    const effRadius = Math.min(width, height) * 0.8;
     // context.fillStyle = risoColors[6].hex;
-    context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
+    // context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
 
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
-        const x = startX + i * squareW;
-        const y = startY + j * squareH;
+        const x = i * squareW;
+        const y = j * squareH;
 
         const gridCenterX = x + squareW / 2;
         const gridCenterY = y + squareH / 2;
@@ -98,16 +91,15 @@ const sketch = () => {
         const distY = gridCenterY - centerY;
         const distance = Math.sqrt(distX * distX + distY * distY);
 
-        const maxDistance = Math.sqrt((centerX - margin) ** 2 + (centerY - margin) ** 2);
-        const distanceFactor = distance / maxDistance;
-        context.globalAlpha = Math.pow(1 - distanceFactor, 2);
+        const distanceFactor = Math.min(1, distance / effRadius);
+        context.globalAlpha = Math.pow(1 - distanceFactor, 3);
 
         // const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)) && Math.cos(distanceFactor + goldenRatio * 0.3);
-        const wave = Math.sin(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
-        // const scale = (wave + 1) / 2;
-        const scale = (wave + goldenRatio - 2 * distanceFactor + 0.1) / 2;
+        const wave = Math.sin(distance * goldenRatio - playhead * (Math.PI * 2 * 6));
+        const scale = (wave + 1) / 2;
+        // const scale = (wave + goldenRatio - 2 * distanceFactor + 0.1) / 2;
 
-        const interpFactor = (Math.cos(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
+        const interpFactor = (Math.cos(distance * goldenRatio - playhead * (Math.PI * 2 * 6)));
         const lerpedColor = interpolateColor(filteredColors[0], filteredColors[2], interpFactor);
 
         context.save();
@@ -121,26 +113,28 @@ const sketch = () => {
         for (let k = 0; k < numPetals; k++) {
           const angle = (Math.PI * 2 / numPetals) * k;
           context.rotate(angle);
-          context.fillRect(-squareW / 2, -squareH / 2, squareW, squareH);
+
+          context.fillStyle = lerpedColor;
+          context.fillRect(0, 0, squareW, squareH);
         }
         context.restore();
       }
     }
 
-    context.globalAlpha = 0.5; 
-    context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
+    context.globalAlpha = 0.5;
+    context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, 0, 0, width, height);
     context.globalAlpha = 1.0;
 
     // Lockup.
     const fontFill = 'hsl(0, 0%, 19%)';
     const fontName = 'bold 30px Neue Haas Grotesk Text';
-    const fontYPos = height - 50;
+    const fontYPos = height - 30;
 
     context.fillStyle = fontFill;
     context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText('08.11.24', margin, fontYPos);
+    context.fillText('08.11.24', 30, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
@@ -152,7 +146,7 @@ const sketch = () => {
     context.font = fontName;
     context.textAlign = 'right';
     context.textBaseline = 'bottom';
-    context.fillText('@anith.png', width - margin, fontYPos);
+    context.fillText('@anith.png', width - 30, fontYPos);
   };
 };
 
