@@ -123,10 +123,8 @@ const sketch = () => {
         for (let k = 0; k < numPetals; k++) {
           const angle = (Math.PI * 2 / numPetals) * k + petalRotationFac;
 
-          context.save();
           context.rotate(angle);
           context.fillRect(-squareW / 2, -squareH / 2, squareW, squareH);
-          context.restore();
         }
         context.restore();
       }
