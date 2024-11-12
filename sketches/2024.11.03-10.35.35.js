@@ -9,30 +9,6 @@ const settings = {
   duration: 16
 };
 
-function interpolateColor(color1, color2, factor) {
-  const hex1 = hexToRgb(color1);
-  const hex2 = hexToRgb(color2);
-
-  const r = Math.round(hex1.r + (hex2.r - hex1.r) * factor);
-  const g = Math.round(hex1.g + (hex2.g - hex1.g) * factor);
-  const b = Math.round(hex1.b + (hex2.b - hex1.b) * factor);
-
-  return rgbToHex(r, g, b);
-}
-
-function hexToRgb(hex) {
-  const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return match ? {
-    r: parseInt(match[1], 16),
-    g: parseInt(match[2], 16),
-    b: parseInt(match[3], 16)
-  } : null;
-}
-
-function rgbToHex(r, g, b) {
-  return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase();
-}
-
 const sketch = () => {
   const goldenRatio = (1 + Math.sqrt(5)) / 2;
 
