@@ -3,7 +3,7 @@ const random = require('canvas-sketch-util/random');
 const risoColors = require("../assets/risoColors.json");
 
 const settings = {
-  dimensions: [ 2048, 2048 ],
+  dimensions: [2048, 2048],
   pixelsPerInch: 300,
   animate: true,
   duration: 16
@@ -11,6 +11,7 @@ const settings = {
 
 const sketch = () => {
   const goldenRatio = (1 + Math.sqrt(5)) / 2;
+
   const primaryColor = risoColors[59].hex;
   const secondaryColor = risoColors[75].hex;
   const accentColor = risoColors[12].hex;
@@ -24,7 +25,7 @@ const sketch = () => {
 
   noiseContext.fillStyle = 'white';
   noiseContext.fillRect(0, 0, noiseCanvas.width, noiseCanvas.height);
-  
+
   const imageData = noiseContext.getImageData(0, 0, noiseCanvas.width, noiseCanvas.height);
 
   for (let i = 0; i < imageData.data.length; i += 4) {
@@ -74,13 +75,13 @@ const sketch = () => {
       }
     }
 
-    context.globalAlpha = 0.2; 
+    context.globalAlpha = 0.2;
     context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
     context.globalAlpha = 1.0;
 
     // Lockup.
     const fontFill = 'hsl(320, 25%, 5%)';
-    const fontName = 'bold 28px Neue Haas Grotesk Text';
+    const fontName = 'bold 30px Neue Haas Grotesk Text';
     const fontYPos = height - 50;
 
     context.fillStyle = fontFill;
@@ -133,7 +134,7 @@ class Flower {
     const scale = (wave + this.goldenRatio - 2 * distanceFactor) / 2;
 
     const interpFactor = (Math.cos(distance * this.goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
-    const lerpedColor = interpolateColor(this.colors[0], this.colors[2], interpFactor);
+    const lerpedColor = this.interpolateColor(this.colors[0], this.colors[2], interpFactor);
 
     context.save();
 
@@ -155,32 +156,31 @@ class Flower {
 
       context.restore();
     }
-
     context.restore();
   }
-}
 
-function interpolateColor(color1, color2, factor) {
-  const hex1 = hexToRgb(color1);
-  const hex2 = hexToRgb(color2);
+  interpolateColor(color1, color2, factor) {
+    const hex1 = this.hexToRgb(color1);
+    const hex2 = this.hexToRgb(color2);
 
-  const r = Math.round(hex1.r + (hex2.r - hex1.r) * factor);
-  const g = Math.round(hex1.g + (hex2.g - hex1.g) * factor);
-  const b = Math.round(hex1.b + (hex2.b - hex1.b) * factor);
+    const r = Math.round(hex1.r + (hex2.r - hex1.r) * factor);
+    const g = Math.round(hex1.g + (hex2.g - hex1.g) * factor);
+    const b = Math.round(hex1.b + (hex2.b - hex1.b) * factor);
 
-  return rgbToHex(r, g, b);
-}
+    return this.rgbToHex(r, g, b);
+  }
 
-function hexToRgb(hex) {
-  const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return match ? {
-    r: parseInt(match[1], 16),
-    g: parseInt(match[2], 16),
-    b: parseInt(match[3], 16)
-  } : null;
-}
+  hexToRgb(hex) {
+    const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return match ? {
+      r: parseInt(match[1], 16),
+      g: parseInt(match[2], 16),
+      b: parseInt(match[3], 16)
+    } : null;
+  }
 
-function rgbToHex(r, g, b) {
-  return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase();
+  rgbToHex(r, g, b) {
+    return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase();
+  }
 }
 
