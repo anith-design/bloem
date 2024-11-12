@@ -116,8 +116,10 @@ const sketch = () => {
         context.fillStyle = lerpedColor;
 
         const numPetals = 10;
+        const rotationOffset = playhead * Math.PI * 2; // Rotate based on animation playhead
+
         for (let k = 0; k < numPetals; k++) {
-          const angle = (Math.PI * 2 / numPetals) * k;
+          const angle = (Math.PI * 2 / numPetals) * k + rotationOffset;
           context.rotate(angle);
           context.fillRect(-squareW / 2, -squareH / 2, squareW, squareH);
         }
