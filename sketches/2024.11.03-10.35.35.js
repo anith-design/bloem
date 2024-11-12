@@ -5,7 +5,7 @@ const risoColors = require("../assets/risoColors.json");
 const settings = {
   dimensions: [2048, 2048],
   pixelsPerInch: 300,
-  animate: true,
+  animate: false,
   duration: 16
 };
 
@@ -149,12 +149,8 @@ class Flower {
     for (let k = 0; k < numPetals; k++) {
       const angle = (Math.PI * 2 / numPetals) * k + petalRotationFac;
 
-      context.save();
-
       context.rotate(angle);
       context.fillRect(-squareW / 2, -squareH / 2, squareW, squareH);
-
-      context.restore();
     }
     context.restore();
   }
