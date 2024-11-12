@@ -83,7 +83,7 @@ const sketch = () => {
 
     context.fillStyle = 'hsl(320, 25%, 5%)';
     context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
-    
+
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
         const x = startX + i * squareW;
@@ -108,20 +108,25 @@ const sketch = () => {
         const interpFactor = (Math.cos(distance * goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
         const lerpedColor = interpolateColor(filteredColors[0], filteredColors[2], interpFactor);
 
+        const flowerRotation = playhead * Math.PI * 2; // Full rotation based on playhead
+
         context.save();
 
         context.translate(gridCenterX, gridCenterY);
+        context.rotate(flowerRotation);
         context.scale(scale, scale);
 
         context.fillStyle = lerpedColor;
 
         const numPetals = 10;
-        const rotationOffset = playhead * Math.PI * 2; // Rotate based on animation playhead
-
+        const petalRotationFac = playhead * Math.PI * 2;
         for (let k = 0; k < numPetals; k++) {
-          const angle = (Math.PI * 2 / numPetals) * k + rotationOffset;
+          const angle = (Math.PI * 2 / numPetals) * k + petalRotationFac;
+
+          context.save();
           context.rotate(angle);
           context.fillRect(-squareW / 2, -squareH / 2, squareW, squareH);
+          context.restore();
         }
         context.restore();
       }
@@ -140,7 +145,7 @@ const sketch = () => {
     context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText('08.11.24', margin, fontYPos);
+    context.fillText('12.11.24', margin, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
