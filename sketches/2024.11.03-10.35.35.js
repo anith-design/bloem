@@ -59,7 +59,6 @@ const sketch = () => {
 
     context.fillStyle = 'hsl(320, 25%, 5%)';
     context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
-
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
         const x = startX + i * squareW;
@@ -74,7 +73,7 @@ const sketch = () => {
         flower.draw(context, playhead, margin, squareW, squareH, gridCenterX, gridCenterY);
       }
     }
-
+    
     context.globalAlpha = 0.2;
     context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
     context.globalAlpha = 1.0;
