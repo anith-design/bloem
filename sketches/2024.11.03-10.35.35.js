@@ -1,5 +1,6 @@
 const canvasSketch = require("canvas-sketch");
 const random = require('canvas-sketch-util/random');
+const { degToRad } = require('canvas-sketch-util/math');
 const risoColors = require("../assets/risoColors.json");
 
 const settings = {
@@ -37,6 +38,9 @@ const sketch = () => {
 
   noiseContext.putImageData(imageData, 0, 0);
 
+  const totalFrames = 16 * 60;  // Assuming 60 frames per second, for 16 seconds duration
+  let frameCount = 0;  // Initialize a frame counter
+
   return ({ context, width, height, playhead }) => {
     const margin = 128;
     const cols = 80;
@@ -54,11 +58,25 @@ const sketch = () => {
     context.fillStyle = 'hsl(0, 0%, 98%)';
     context.fillRect(0, 0, width, height);
 
+    context.fillStyle = 'hsl(320, 25%, 5%)';
+    context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
+
     const centerX = width / 2;
     const centerY = height / 2;
 
-    context.fillStyle = 'hsl(320, 25%, 5%)';
-    context.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
+    const rotationFac = 0.25;
+
+    context.save();
+
+    context.beginPath();
+    context.rect(margin, margin, gridWidth, gridHeight);
+    context.clip();
+
+    context.translate(centerX, centerY);
+    context.scale(1.37, 1.37);
+    context.rotate(playhead * Math.PI * 2 * rotationFac);
+    context.translate(-centerX, -centerY);
+
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
         const x = startX + i * squareW;
@@ -73,12 +91,16 @@ const sketch = () => {
         flower.draw(context, playhead, margin, squareW, squareH, gridCenterX, gridCenterY);
       }
     }
+
+    context.restore();
     
     context.globalAlpha = 0.2;
     context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
     context.globalAlpha = 1.0;
 
     // Lockup.
+    const currentFrame = Math.floor(playhead * totalFrames);
+
     const fontFill = 'hsl(320, 25%, 5%)';
     const fontName = 'bold 30px Neue Haas Grotesk Text';
     const fontYPos = height - 50;
@@ -87,19 +109,20 @@ const sketch = () => {
     context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText('12.11.24', margin, fontYPos);
+    // context.fillText('13.11.24', margin, fontYPos);
+    context.fillText(`Frame: ${currentFrame} / ${totalFrames}`, margin, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
     context.textAlign = 'center';
     context.textBaseline = 'bottom';
-    context.fillText('bloem', width / 2, fontYPos);
+    context.fillText('', width / 2, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
     context.textAlign = 'right';
     context.textBaseline = 'bottom';
-    context.fillText('@anith.png', width - margin, fontYPos);
+    context.fillText('', width - margin, fontYPos);
   };
 };
 
@@ -116,25 +139,23 @@ class Flower {
 
   draw(context, playhead, margin, squareW, squareH, gridCenterX, gridCenterY) {
     this.margin = margin;
-
     this.gridCenterX = gridCenterX;
     this.gridCenterY = gridCenterY;
 
     const distX = this.gridCenterX - this.centerX;
     const distY = this.gridCenterY - this.centerY;
-
     const distance = Math.sqrt(distX * distX + distY * distY);
 
     const distanceFactor = distance / this.maxDistance;
 
-    context.globalAlpha = Math.pow(1 - distanceFactor, 3.5);
+    context.globalAlpha = Math.pow(1 - distanceFactor, 5);
 
     const wave = Math.sin(distance * this.goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6));
     const scale = (wave + this.goldenRatio - 2 * distanceFactor) / 2;
 
     const interpFactor = (Math.cos(distance * this.goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
     const lerpedColor = this.interpolateColor(this.colors[0], this.colors[2], interpFactor);
-
+    
     context.save();
 
     context.translate(this.gridCenterX, this.gridCenterY);
@@ -143,6 +164,7 @@ class Flower {
     context.fillStyle = lerpedColor;
 
     const numPetals = 10;
+    const petalSpeed = 0.25;
     const petalRotationFac = playhead * Math.PI * 2;
 
     for (let k = 0; k < numPetals; k++) {
