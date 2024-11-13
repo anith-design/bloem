@@ -38,8 +38,8 @@ const sketch = () => {
 
   noiseContext.putImageData(imageData, 0, 0);
 
-  const totalFrames = 16 * 60;  // Assuming 60 frames per second, for 16 seconds duration
-  let frameCount = 0;  // Initialize a frame counter
+  const totalFrames = 16;  // Assuming 60 frames per second, for 16 seconds duration
+  let frameCount = 1;  // Initialize a frame counter
 
   return ({ context, width, height, playhead }) => {
     const margin = 128;
