@@ -1,6 +1,5 @@
 const canvasSketch = require("canvas-sketch");
 const random = require('canvas-sketch-util/random');
-const { degToRad } = require('canvas-sketch-util/math');
 const risoColors = require("../assets/risoColors.json");
 
 const settings = {
@@ -38,9 +37,6 @@ const sketch = () => {
 
   noiseContext.putImageData(imageData, 0, 0);
 
-  const totalFrames = 16;  // Assuming 60 frames per second, for 16 seconds duration
-  let frameCount = 1;  // Initialize a frame counter
-
   return ({ context, width, height, playhead }) => {
     const margin = 128;
     const cols = 80;
@@ -64,7 +60,38 @@ const sketch = () => {
     const centerX = width / 2;
     const centerY = height / 2;
 
-    const rotationFac = 0.25;
+    // Drawing the outer margin guide
+    context.strokeStyle = 'rgba(200, 0, 0, 0.5)';
+    context.lineWidth = 2;
+    context.strokeRect(margin, margin, gridWidth, gridHeight);
+
+    // Drawing the center crosshair
+    context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(centerX, 0);
+    context.lineTo(centerX, height);
+    context.moveTo(0, centerY);
+    context.lineTo(width, centerY);
+    context.stroke();
+
+    // Drawing grid lines (optional, for clarity on alignment)
+    // context.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    // context.lineWidth = 4;
+    // for (let i = 0; i <= cols; i++) {
+    //   const x = margin + (i * gridWidth) / cols;
+    //   context.beginPath();
+    //   context.moveTo(x, margin);
+    //   context.lineTo(x, height - margin);
+    //   context.stroke();
+    // }
+    // for (let j = 0; j <= rows; j++) {
+    //   const y = margin + (j * gridHeight) / rows;
+    //   context.beginPath();
+    //   context.moveTo(margin, y);
+    //   context.lineTo(width - margin, y);
+    //   context.stroke();
+    // }
 
     context.save();
 
@@ -74,7 +101,7 @@ const sketch = () => {
 
     context.translate(centerX, centerY);
     context.scale(1.37, 1.37);
-    context.rotate(playhead * Math.PI * 2 * rotationFac);
+    context.rotate(playhead * Math.PI * 2 * 0.25);
     context.translate(-centerX, -centerY);
 
     for (let i = 0; i < cols; i++) {
@@ -93,7 +120,7 @@ const sketch = () => {
     }
 
     context.restore();
-    
+
     context.globalAlpha = 0.2;
     context.drawImage(noiseCanvas, 0, 0, noiseCanvas.width, noiseCanvas.height, margin, margin, width - 2 * margin, height - 2 * margin);
     context.globalAlpha = 1.0;
@@ -109,20 +136,20 @@ const sketch = () => {
     context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    // context.fillText('13.11.24', margin, fontYPos);
-    context.fillText(`Frame: ${currentFrame} / ${totalFrames}`, margin, fontYPos);
+    context.fillText('14.11.24', margin, fontYPos);
+    // context.fillText(`Frame: ${currentFrame} / ${totalFrames}`, margin, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
     context.textAlign = 'center';
     context.textBaseline = 'bottom';
-    context.fillText('', width / 2, fontYPos);
+    context.fillText('bloem', width / 2, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
     context.textAlign = 'right';
     context.textBaseline = 'bottom';
-    context.fillText('', width - margin, fontYPos);
+    context.fillText('@anith.png', width - margin, fontYPos);
   };
 };
 
@@ -154,8 +181,8 @@ class Flower {
     const scale = (wave + this.goldenRatio - 2 * distanceFactor) / 2;
 
     const interpFactor = (Math.cos(distance * this.goldenRatio * 0.4 - playhead * (Math.PI * 2 * 6)));
-    const lerpedColor = this.interpolateColor(this.colors[0], this.colors[2], interpFactor);
-    
+    const lerpedColor = this.hueShift(this.interpolateColor(this.colors[0], this.colors[2], interpFactor), playhead * 360);
+
     context.save();
 
     context.translate(this.gridCenterX, this.gridCenterY);
@@ -164,8 +191,7 @@ class Flower {
     context.fillStyle = lerpedColor;
 
     const numPetals = 10;
-    const petalSpeed = 0.25;
-    const petalRotationFac = playhead * Math.PI * 2;
+    const petalRotationFac = playhead * Math.PI * 2 * 8;
 
     for (let k = 0; k < numPetals; k++) {
       const angle = (Math.PI * 2 / numPetals) * k + petalRotationFac;
@@ -199,5 +225,59 @@ class Flower {
   rgbToHex(r, g, b) {
     return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase();
   }
-}
 
+  hueShift(color, degree) {
+    const { r, g, b } = this.hexToRgb(color);
+    const hsl = this.rgbToHsl(r, g, b);
+    hsl.h = (hsl.h + degree) % 360;
+    const rgb = this.hslToRgb(hsl.h, hsl.s, hsl.l);
+    return this.rgbToHex(rgb.r, rgb.g, rgb.b);
+  }
+
+  rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0; // achromatic
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h *= 60;
+    }
+    return { h, s, l };
+  }
+
+  hslToRgb(h, s, l) {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+
+    let r, g, b;
+    if (s === 0) {
+      r = g = b = l; // achromatic
+    } else {
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h / 360 + 1 / 3);
+      g = hue2rgb(p, q, h / 360);
+      b = hue2rgb(p, q, h / 360 - 1 / 3);
+    }
+    return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
+  }
+}
