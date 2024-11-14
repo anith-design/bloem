@@ -37,6 +37,9 @@ const sketch = () => {
 
   noiseContext.putImageData(imageData, 0, 0);
 
+  const totalFrames = 16 * 60;  // Assuming 60 frames per second, for 16 seconds duration
+  let frameCount = 0;  // Initialize a frame counter
+
   return ({ context, width, height, playhead }) => {
     const margin = 128;
     const cols = 80;
@@ -136,8 +139,8 @@ const sketch = () => {
     context.font = fontName;
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
-    context.fillText('14.11.24', margin, fontYPos);
-    // context.fillText(`Frame: ${currentFrame} / ${totalFrames}`, margin, fontYPos);
+    // context.fillText('14.11.24', margin, fontYPos);
+    context.fillText(`Frame: ${currentFrame} / ${totalFrames}`, margin, fontYPos);
 
     context.fillStyle = fontFill;
     context.font = fontName;
